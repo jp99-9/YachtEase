@@ -26,6 +26,7 @@ class ItemFactory extends Factory
             'description' => $this->faker->sentence(),
             'quantity' => $this->faker->numberBetween(1, 100),
             'image' => $this->faker->imageUrl(640, 480, 'technics'),
+            'brand' =>$this->faker->word(),
             'minimum_recommended' => $this->faker->numberBetween(1, 10),
             'qr_code' => $this->faker->uuid(),
             'type_id' => Type::inRandomOrder()->first()->id, 

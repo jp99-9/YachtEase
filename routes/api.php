@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthBoatController;
+use App\Http\Controllers\API\ItemController;
 use App\Http\Controllers\API\ProfileController;
 
 Route::prefix('boat')->group(function () {
@@ -11,8 +12,10 @@ Route::prefix('boat')->group(function () {
     Route::middleware('auth:sanctum')->post('/logout', [AuthBoatController::class, 'logout']);
 });
 
-Route::middleware('auth:sanctum')->prefix('profiles')->group(function () {
+Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::post('/profiles/{profile}/claim', [ProfileController::class, 'claimProfile']);
+
+    Route::apiResource('items', ItemController::class);
 
 });
