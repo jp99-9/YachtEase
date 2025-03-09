@@ -38,20 +38,41 @@ class AuthBoatController extends Controller
     // }
 
     public function login(Request $request)
-    {
+{
+    try {
         $validated = $request->validate([
             'unique_code' => 'required|string',
             'password' => 'required|string',
         ]);
 
+        // Buscar barco por código único
         $boat = Boat::where('unique_code', $validated['unique_code'])->first();
 
-        if (!$boat || !Hash::check($validated['password'], $boat->password)) {
-            throw ValidationException::withMessages([
-                'unique_code' => ['El código o la contraseña son incorrectos.'],
-            ]);
+        // 🚨 Si no se encuentra el código único
+        if (!$boat) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'El código único ingresado no está registrado.'
+            ], 404);
         }
 
+        // 🚨 Si la contraseña es incorrecta
+        if (!Hash::check($validated['password'], $boat->password)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'La contraseña es incorrecta.'
+            ], 401);
+        }
+
+        // (Opcional) Verificar si ya tiene una sesión activa
+        if ($boat->tokens()->count() > 0) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Ya tienes una sesión activa. Cierra sesión antes de iniciar otra.'
+            ], 403);
+        }
+
+        // Generar token de acceso
         $token = $boat->createToken('boat-token')->plainTextToken;
 
         return response()->json([
@@ -59,8 +80,17 @@ class AuthBoatController extends Controller
             'token' => $token,
             'boat' => $boat,
             'message' => 'Inicio de sesión exitoso'
-        ]);
+        ], 200);
+
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Ocurrió un error inesperado.',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
+
 
     // Logout de barco
     public function logout(Request $request)

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthBoatController;
 use App\Http\Controllers\API\ItemController;
+use App\Http\Controllers\API\MovementController;
 use App\Http\Controllers\API\ProfileController;
 
 Route::prefix('boat')->group(function () {
@@ -17,5 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/profiles/{profile}/claim', [ProfileController::class, 'claimProfile']);
 
     Route::apiResource('items', ItemController::class);
+
+    Route::apiResource('movements', MovementController::class);
 
 });
