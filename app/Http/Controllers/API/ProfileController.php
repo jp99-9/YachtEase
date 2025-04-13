@@ -2,30 +2,66 @@
 
 namespace App\Http\Controllers\API;
 
+use Exception;
+use Throwable;
 use App\Models\Role;
 use App\Models\User;
 use App\Models\Profile;
 use App\Models\UserBoatRole;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 
 class ProfileController extends Controller
 {
-    public function index()
+    public function index(): JsonResponse
     {
-        $boat = Auth::user();
-        $profiles = $boat->profiles; // Obtiene solo los perfiles del barco autenticado
+        try {
+            $boat = Auth::user();
 
-        return response()->json([
-            'status' => 'success',
-            'data' => $profiles
-        ]);
+            // Validación defensiva: ¿hay usuario?
+            if (!$boat) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Usuario no autenticado.'
+                ], 401);
+            }
+
+            $profiles = $boat->profiles;
+
+            // Validación defensiva: ¿hay perfiles?
+            if (!$profiles || $profiles->isEmpty()) {
+                return response()->json([
+                    'status' => 'warning',
+                    'message' => 'No se encontraron perfiles para este barco.'
+                ], 204); // 204: No Content
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $profiles
+            ]);
+        } catch (Throwable $e) {
+            // Logging del error con contexto
+            Log::error('Error al obtener perfiles del barco', [
+                'user_id' => Auth::id(),
+                'error' => $e->getMessage()
+            ]);
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Error interno al obtener los perfiles.'
+            ], 500); // Internal Server Error
+        }
     }
 
     public function store(Request $request)
     {
         $boat = Auth::user();
+
+
 
         //he incluido el rol_id para que se puedad añadir a la tabla intermedia al crearse el usuario, ya sea temporal o definitivo.
 
@@ -70,6 +106,9 @@ class ProfileController extends Controller
 
 
 
+
+
+
         // Crear perfil vinculado al usuario creado
         $profile = $boat->profiles()->create([
             'name' => $validated['name'],
@@ -79,12 +118,7 @@ class ProfileController extends Controller
 
         // **Registrar la relación en la tabla `user_boat_roles`**
 
-        if (!Role::where('id', $validated['role_id'])->exists()) {
-            return response()->json([
-                'status' => 'error',
-                'message' => 'El role_id proporcionado no existe.'
-            ], 400);
-        }
+
         $boat->users()->attach($user->id, [
             'role_id' => $validated['role_id'],
             'status' => 'active',
@@ -92,9 +126,21 @@ class ProfileController extends Controller
             'end_date' => null
         ]);
 
+        //uso este bloque para acceder al rol del usuario en la tabal intermedia y poder incluir el rol en el json de respuesta
+        $role = $boat->users()
+            ->where('user_id', $user->id)
+            ->first()
+            ->pivot
+            ->role_id;
+
+        $roleName = Role::find($role)->name;
+
         return response()->json([
             'status' => 'success',
-            'data' => $profile,
+            'data' => [
+                'profile' => $profile,
+                'role' => $roleName
+            ],
             'message' => $message
         ], 201);
     }

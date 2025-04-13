@@ -7,11 +7,11 @@ use App\Http\Controllers\API\ItemController;
 use App\Http\Controllers\API\MovementController;
 use App\Http\Controllers\API\ProfileController;
 
-Route::prefix('boat')->group(function () {
+
     // Route::post('/register', [AuthBoatController::class, 'register']);
     Route::post('/login', [AuthBoatController::class, 'login']);
     Route::middleware('auth:sanctum')->post('/logout', [AuthBoatController::class, 'logout']);
-});
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('profiles', ProfileController::class);

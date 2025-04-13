@@ -1,11 +1,8 @@
 version: '3.8'
 
 services:
-  # Servicio de Laravel (PHP + FPM)
   app:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: jparisti99/yacht-ease-app:latest
     container_name: laravel_app
     restart: unless-stopped
     working_dir: /var/www/html
@@ -16,7 +13,6 @@ services:
     networks:
       - laravel_net
 
-  # Servicio de MySQL
   mysql:
     image: mysql:8.0
     container_name: laravel_mysql
@@ -33,7 +29,6 @@ services:
     networks:
       - laravel_net
 
-  # Servicio de Nginx
   nginx:
     image: nginx:latest
     container_name: laravel_nginx

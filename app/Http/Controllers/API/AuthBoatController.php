@@ -48,7 +48,7 @@ class AuthBoatController extends Controller
         // Buscar barco por código único
         $boat = Boat::where('unique_code', $validated['unique_code'])->first();
 
-        // 🚨 Si no se encuentra el código único
+        //Si no se encuentra el código único
         if (!$boat) {
             return response()->json([
                 'status' => 'error',
@@ -56,7 +56,7 @@ class AuthBoatController extends Controller
             ], 404);
         }
 
-        // 🚨 Si la contraseña es incorrecta
+        // Si la contraseña es incorrecta
         if (!Hash::check($validated['password'], $boat->password)) {
             return response()->json([
                 'status' => 'error',
