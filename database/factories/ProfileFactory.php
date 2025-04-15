@@ -24,7 +24,7 @@ class ProfileFactory extends Factory
         return [
             'name' => $this->faker->name(),
             'avatar' => $this->faker->imageUrl(100, 100, 'people'),
-            'status' => $this->faker->randomElement(['active', 'inactive']),
+            'status' => $this->faker->randomElement(['Active', 'Inactive']),
             'user_id' => User::inRandomOrder()->first()->id, 
             'boat_id' => Boat::inRandomOrder()->first()->id, 
         ];

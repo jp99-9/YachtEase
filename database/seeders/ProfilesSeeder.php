@@ -13,8 +13,8 @@ class ProfilesSeeder extends Seeder
      */
     public function run(): void
     {
-        Profile::create(['name' => 'Capitán Juan', 'avatar' => 'captain.png', 'status' => 'active', 'user_id' => 1, 'boat_id' => 1]);
-        Profile::create(['name' => 'Marinero Ana', 'avatar' => 'sailor.png', 'status' => 'active', 'user_id' => 2, 'boat_id' => 2]);
+        Profile::create(['name' => 'Capitán Juan', 'avatar' => 'captain.png', 'status' => 'Active', 'user_id' => 1, 'boat_id' => 1]);
+        Profile::create(['name' => 'Marinero Ana', 'avatar' => 'sailor.png', 'status' => 'Active', 'user_id' => 2, 'boat_id' => 2]);
 
         Profile::factory(5)->create();
     }
