@@ -46,5 +46,14 @@ services:
 networks:
   laravel_net:
 
+
 volumes:
   mysql_data:
+
+    adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - laravel_net
