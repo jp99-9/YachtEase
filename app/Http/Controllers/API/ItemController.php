@@ -19,7 +19,7 @@ class ItemController extends Controller
         $boat = Auth::user();
         $items = Item::whereHas('location', function ($query) use ($boat) {
             $query->where('boat_id', $boat->id);
-        })->with('type', 'storageBox')->get();
+        })->with('type', 'storageBox', 'location')->get();
         
         
         return response()->json([
