@@ -13,18 +13,46 @@ class ItemController extends Controller
 {
     /**
      * Display a listing of the resource.
+     * Vamos a probar a filtrar desde aqui en vez de el frontend para mejorar la eficiencia y escalabilidad.
      */
-    public function index()
+    public function index(Request $request)
     {
         $boat = Auth::user();
-        $items = Item::whereHas('location', function ($query) use ($boat) {
-            $query->where('boat_id', $boat->id);
-        })->with('type', 'storageBox', 'location')->get();
+        $query = Item::with(['type', 'location', 'storageBox'])
+        ->whereHas('location', function ($q) use ($boat) {
+        $q->where('boat_id', $boat->id);
+    });
         
-        
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        // Filtros específicos
+        if ($request->filled('type_id')) {
+            $query->where('type_id', $request->type_id);
+        }
+
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        if ($request->filled('box_id')) {
+            $query->where('storage_box_id', $request->box_id);
+        }
+
+        $items = $query->paginate($request->get('per_page', 20));
+
         return response()->json([
             'status' => 'success',
-            'data' => $items
+            'data' => [
+                'items' => $items->items(),
+                'pagination' => [
+                    'current_page' => $items->currentPage(),
+                    'last_page' => $items->lastPage(),
+                    'per_page' => $items->perPage(),
+                    'total' => $items->total(),
+                ]
+            ]
         ]);
     }
 

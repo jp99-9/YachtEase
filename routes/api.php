@@ -6,6 +6,9 @@ use App\Http\Controllers\API\AuthBoatController;
 use App\Http\Controllers\API\ItemController;
 use App\Http\Controllers\API\MovementController;
 use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\TypeController;
+use App\Http\Controllers\API\LocationController;
+use App\Http\Controllers\API\StorageBoxController;
 
 
     // Route::post('/register', [AuthBoatController::class, 'register']);
@@ -20,5 +23,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('items', ItemController::class);
 
     Route::apiResource('movements', MovementController::class);
+
+    Route::apiResource('/types', TypeController::class);
+    Route::apiResource('/locations', LocationController::class);
+    Route::apiResource('/boxes', StorageBoxController::class);
 
 });
