@@ -26,6 +26,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('/types', TypeController::class);
     Route::apiResource('/locations', LocationController::class);
+    Route::get('/locations/{id}/items', [LocationController::class, 'getItems']);
+
     Route::apiResource('/boxes', StorageBoxController::class);
 
 });
