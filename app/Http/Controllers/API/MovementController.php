@@ -46,23 +46,27 @@ class MovementController extends Controller
         $boat = Auth::user(); // Barco autenticado
 
         $validated = $request->validate([
-            'profile_id' => 'required|exists:profiles,id',
+            'quantity' => 'required|integer|min:1',
+            'date' => 'required|date',
+            'reason' => 'required|string|max:200',
+            'observations' => 'nullable|string|max:200',
+            //'profile_id' => 'required|exists:profiles,id',
             'item_id' => 'required|exists:items,id',
-            'location_id' => 'required|exists:locations,id',
-            'cantidad' => 'required|integer',
-            'motivo' => 'required|string|max:100',
-            'observaciones' => 'nullable|string',
-            'fecha' => 'nullable|date',
+            'from_location_id' => 'required|exists:locations,id',
+            'from_box_id' => 'nullable|exists:storage_boxes,id',
+            'to_location_id' => 'required|exists:locations,id',
+            'to_box_id' => 'nullable|exists:storage_boxes,id',
         ]);
 
         $movement = Movement::create([
             'item_id' => $validated['item_id'],
-            'profile_id' => $validated['profile_id'],
-            'location_id' => $validated['location_id'],
+          //  'profile_id' => $validated['profile_id'],
             'quantity' => $validated['quantity'],
             'date' => now(), // Se registra la fecha actual automáticamente
             'reason' => $validated['reason'],
             'observations' => $validated['observations'] ?? null,
+            'location_id' => $validated['to_location_id'],
+            'storage_box_id' => $validated['to_box_id'] ?? null,
         ]);
 
         return response()->json([
@@ -107,7 +111,7 @@ class MovementController extends Controller
 
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the specified movemnt from storage.
      */
     public function destroy(Movement $movement)
     {
