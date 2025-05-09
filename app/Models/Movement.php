@@ -9,7 +9,7 @@ class Movement extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['quantity', 'date', 'reason', 'observations', 'profile_id', 'location_id', 'item_id','from_location_id', 'from_box_id', 'to_location_id',
+    protected $fillable = ['quantity', 'movement_date', 'reason', 'observations', 'profile_id', 'location_id', 'item_id','from_location_id', 'from_box_id', 'to_location_id',
         'to_box_id',];
 
     public function profile()

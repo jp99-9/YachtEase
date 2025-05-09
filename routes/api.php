@@ -2,12 +2,13 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\API\AuthBoatController;
 use App\Http\Controllers\API\ItemController;
-use App\Http\Controllers\API\MovementController;
-use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\RoleController;
 use App\Http\Controllers\API\TypeController;
+use App\Http\Controllers\API\ProfileController;
+use App\Http\Controllers\API\AuthBoatController;
 use App\Http\Controllers\API\LocationController;
+use App\Http\Controllers\API\MovementController;
 use App\Http\Controllers\API\StorageBoxController;
 
 
@@ -29,5 +30,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/locations/{id}/items', [LocationController::class, 'getItems']);
 
     Route::apiResource('/boxes', StorageBoxController::class);
+    Route::get('/roles', [RoleController::class, 'index']);
 
 });

@@ -72,11 +72,14 @@ class ProfileController extends Controller
             'role_id' => 'required|exists:roles,id', // El rol es obligatorio
         ]);
 
+
+
         //  Buscar usuario por email si se proporciona
         if (!empty($validated['email'])) {
+            
             $user = User::where('email', $validated['email'])->first();
-            $message = 'Perfil creado y vinculado a tu cuenta existente.';
 
+            
             //ejemplo thunderclient para probar
             // {
             //     "name": "Juan Pérez",
@@ -101,13 +104,19 @@ class ProfileController extends Controller
                 // }
 
             ]);
-            $message = 'Perfil creado correctamente, el usuario lo puede reclamar después.';
         }
 
+        $message = $user->wasRecentlyCreated
+            ? 'Perfil creado correctamente, el usuario lo puede reclamar después.'
+            : 'Perfil creado y vinculado a tu cuenta existente.';
 
-
-
-
+        if ($boat->profiles()->where('user_id', $user->id)->exists()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Este usuario ya tiene un perfil en el barco.'
+            ], 409);
+            
+        }
 
         // Crear perfil vinculado al usuario creado
         $profile = $boat->profiles()->create([
@@ -127,22 +136,18 @@ class ProfileController extends Controller
         ]);
 
         //uso este bloque para acceder al rol del usuario en la tabal intermedia y poder incluir el rol en el json de respuesta
-        $role = $boat->users()
-            ->where('user_id', $user->id)
-            ->first()
-            ->pivot
-            ->role_id;
+        $roleName = Role::find($validated['role_id'])->name;
 
-        $roleName = Role::find($role)->name;
 
         return response()->json([
             'status' => 'success',
             'data' => [
-                'profile' => $profile,
+                'profile' => $profile->only(['id', 'name', 'avatar']),
                 'role' => $roleName
             ],
             'message' => $message
         ], 201);
+        
     }
 
     public function claimProfile(Request $request, Profile $profile)

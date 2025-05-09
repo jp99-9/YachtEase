@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('movements', function (Blueprint $table) {
             $table->id();
             $table->integer('quantity');
-            $table->dateTime('movement_date');
+            $table->dateTime('movement_date')->useCurrent();
             $table->string('reason',200);
             $table->string('observations',200)->nullable();
             $table->foreignId('profile_id')->constrained('profiles')->onDelete('restrict');
