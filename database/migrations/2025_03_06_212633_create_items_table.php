@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name',50);
             $table->string('description',250);
             $table->integer('quantity');
-            $table->string('image')->nullable();
+            $table->text('image')->nullable();
             $table->string('brand',100)->nullable();
             $table->integer('minimum_recommended')->nullable();
             $table->string('qr_code')->nullable();

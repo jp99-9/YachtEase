@@ -13,6 +13,13 @@ class TypesSeeder extends Seeder
      */
     public function run(): void
     {
-        Type::factory(8)->create();
+
+        Type::create(['name' => 'Herramienta', 'description' => 'Herramienta de uso general']);
+        Type::create(['name' => 'Material','description' => 'Material de uso general']);
+        Type::create(['name' => 'Equipo','description' => 'Equipo de uso general']);
+        Type::create(['name' => 'Consumible','description' => 'Consumible de uso general']); 
+        Type::create(['name' => 'Equipo','description' => 'Equipo de uso general']);
+
+        Type::factory(0)->create();
     }
 }

@@ -13,6 +13,12 @@ class StorageBoxesSeeder extends Seeder
      */
     public function run(): void
     {
-        StorageBox::factory(10)->create();
+        StorageBox::create(['name' => 'Caja 1', 'description' => 'Caja defensas al lado del ancla', 'capacity' => 50, 'location_id' => 1]);
+        StorageBox::create(['name' => 'Caja 2', 'description' => 'Caja de banderas', 'capacity' => 100, 'location_id' => 1]);
+        StorageBox::create(['name' => 'Caja 3', 'description' => 'Caja de cabos', 'capacity' => 100, 'location_id' => 2]);
+        StorageBox::create(['name' => 'Caja 4', 'description' => 'Caja documentos', 'capacity' => 100, 'location_id' => 3]);
+        StorageBox::create(['name' => 'Caja 5', 'description' => 'Caja de herramientas', 'capacity' => 100, 'location_id' => 4]);
+        
+        StorageBox::factory(5)->create();
     }
 }

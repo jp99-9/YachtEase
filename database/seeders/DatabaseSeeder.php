@@ -24,16 +24,12 @@ class DatabaseSeeder extends Seeder
                 UserBoatRoleSeeder::class,
                 LocationsSeeder::class,
                 ProfilesSeeder::class,
-                ItemsSeeder::class,
                 StorageBoxesSeeder::class,
-                MovementsSeeder::class,
                 TypesSeeder::class,
+                ItemsSeeder::class,
+                MovementsSeeder::class,
 
             ]);
         }
-
-        // User::factory(10)->create();
-
-        
     }
 }

@@ -32,6 +32,6 @@ class BoatsSeeder extends Seeder
             'unique_code' => 'ODYSSEY123',
         ]);
 
-        Boat::factory(10)->create();
+        
     }
 }

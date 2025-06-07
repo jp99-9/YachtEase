@@ -67,6 +67,7 @@ class ItemController extends Controller
             'name' => 'required|string|max:255',
             'description' => 'nullable|string',
             'quantity' => 'required|integer|min:1',
+            'image' => 'nullable|string|max:255',
             'type_id' => 'required|exists:types,id',
             'location_id' => 'required|exists:locations,id',
             'storage_box_id' => 'nullable|exists:storage_boxes,id',
