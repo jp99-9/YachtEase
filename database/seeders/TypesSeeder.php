@@ -18,7 +18,7 @@ class TypesSeeder extends Seeder
         Type::create(['name' => 'Material','description' => 'Material de uso general']);
         Type::create(['name' => 'Equipo','description' => 'Equipo de uso general']);
         Type::create(['name' => 'Consumible','description' => 'Consumible de uso general']); 
-        Type::create(['name' => 'Equipo','description' => 'Equipo de uso general']);
+        Type::create(['name' => 'Seguridad','description' => 'Equipo de seguridad']);
 
         Type::factory(0)->create();
     }
