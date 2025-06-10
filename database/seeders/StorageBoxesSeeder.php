@@ -19,6 +19,6 @@ class StorageBoxesSeeder extends Seeder
         StorageBox::create(['name' => 'Caja 4', 'description' => 'Caja documentos', 'capacity' => 100, 'location_id' => 3]);
         StorageBox::create(['name' => 'Caja 5', 'description' => 'Caja de herramientas', 'capacity' => 100, 'location_id' => 4]);
         
-        StorageBox::factory(5)->create();
+        StorageBox::factory(0)->create();
     }
 }

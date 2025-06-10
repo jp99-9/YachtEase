@@ -18,18 +18,11 @@ class ItemsSeeder extends Seeder
     public function run(): void
     {
 
-        Item::create([
-            'name' => 'Martillo',
-            'description' => 'Martillo de 1kg',
-            'quantity' => 1,
-            'image' => '',
-            'brand' => 'Stanley',
-            'minimum_recommended' => 1,
-            'qr_code' => '1234567890',
-            'type_id' => 1,
-            'location_id' => 1,
-            'storage_box_id' => 4,
-        ]);
+        $items = json_decode(file_get_contents(database_path('data/items.json')), true);
+
+        foreach ($items as $item) {
+            Item::create($item);
+        }
 
         if (Type::count() === 0) {
             Type::factory()->count(3)->create();

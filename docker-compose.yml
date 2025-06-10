@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     #volumes:
-     # - .:/var/www/html
+    # - .:/var/www/html
     depends_on:
       - mysql
     networks:
@@ -19,6 +19,7 @@ services:
     image: mysql:8.0
     container_name: mysql
     restart: unless-stopped
+    
     environment:
       MYSQL_DATABASE: laravel_db
       MYSQL_USER: laravel_user
