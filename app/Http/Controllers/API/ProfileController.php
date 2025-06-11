@@ -208,7 +208,8 @@ class ProfileController extends Controller
         $validated = $request->validate([
             'name' => 'nullable|string|max:255',
             'avatar' => 'nullable|string|max:255', // Opcional
-            'role_id' => 'nullable|exists:roles,id'
+            'role_id' => 'nullable|exists:roles,id',
+            'email' => 'nullable|email|unique:users,email'
         ]);
 
         $profile->update([

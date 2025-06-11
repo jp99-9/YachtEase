@@ -62,7 +62,20 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $boat = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+        
+        $location = Location::create($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $location,
+            'message' => 'Ubicación creada correctamente.'
+        ]);
     }
 
     /**
@@ -78,7 +91,24 @@ class LocationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $boat = Auth::user();
+        $location = Location::find($id);
+        if ($location->boat_id !== $boat->id) {
+            return response()->json(['error' => 'Acceso denegado'], 403);
+        }
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'description' => 'nullable|string',
+        ]);
+        
+        $location->update($validated);
+        
+        return response()->json([
+            'status' => 'success',
+            'data' => $location,
+            'message' => 'Ubicación actualizada correctamente.'
+        ]);
     }
 
     /**
@@ -86,6 +116,17 @@ class LocationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $boat = Auth::user();
+        $location = Location::find($id);
+        if ($location->boat_id !== $boat->id) {
+            return response()->json(['error' => 'Acceso denegado'], 403);
+        }
+        
+        $location->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Ubicación eliminada correctamente.'
+        ]);
     }
 }

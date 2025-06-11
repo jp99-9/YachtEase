@@ -69,6 +69,9 @@ class ItemController extends Controller
             'quantity' => 'required|integer|min:1',
             'image' => 'nullable|string|max:255',
             'type_id' => 'required|exists:types,id',
+            'brand' => 'nullable|string|max:255',
+            'minimum_recommended' => 'nullable|integer|min:1',
+            'qr_code' => 'nullable|string|max:255',
             'location_id' => 'required|exists:locations,id',
             'storage_box_id' => 'nullable|exists:storage_boxes,id',
         ]);
@@ -89,6 +92,9 @@ class ItemController extends Controller
         //       "type_id":"2",
         //       "location_id":"1",
         //        "storage_box_id":"5"
+        //       "brand":"Bosch",
+        //       "minimum_recommended":"2",
+        //       "qr_code":"1234567890"
             
         //   }
 
@@ -110,7 +116,9 @@ class ItemController extends Controller
         }
         return response()->json([
             'status' => 'success',
-            'data' => $item->load('type', 'storageBox')
+            'data' => $item->load('type', 'storageBox'),
+            'message' => 'Item encontrado correctamente.'
+            
         ]);
     }
 
@@ -131,6 +139,9 @@ class ItemController extends Controller
             'type_id' => 'required|exists:types,id',
             'location_id' => 'required|exists:locations,id',
             'storage_box_id' => 'nullable|exists:storage_boxes,id',
+            'brand' => 'nullable|string|max:255',
+            'minimum_recommended' => 'nullable|integer|min:1',
+            'qr_code' => 'nullable|string|max:255',
         ]);
 
         $item->update($validated);

@@ -31,7 +31,15 @@ class StorageBoxController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $boat = Auth::user();
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'location_id' => 'required|exists:locations,id',
+        ]);
+
+        $box = StorageBox::create($validated);
+        
     }
 
     /**
@@ -47,7 +55,26 @@ class StorageBoxController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $boat = Auth::user();
+        $box = StorageBox::find($id);
+        if ($box->location->boat_id !== $boat->id) {
+            return response()->json(['error' => 'Acceso denegado'], 403);
+        }
+        
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'location_id' => 'required|exists:locations,id',
+        ]);
+
+        $box->update($validated);
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $box,
+            'message' => 'Caja actualizada correctamente.'
+        ]);
+
+
     }
 
     /**
@@ -55,6 +82,17 @@ class StorageBoxController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $boat = Auth::user();
+        $box = StorageBox::find($id);
+        if ($box->location->boat_id !== $boat->id) {
+            return response()->json(['error' => 'Acceso denegado'], 403);
+        }
+        
+        $box->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Caja eliminada correctamente.'
+        ]);
     }
 }
