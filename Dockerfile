@@ -13,8 +13,7 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 
 # Copia los archivos de Laravel al contenedor
-COPY . .
-
+COPY . /var/www/html
 # Instala las dependencias de Laravel
 RUN composer install
 

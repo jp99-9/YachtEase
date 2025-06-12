@@ -21,8 +21,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('profiles', ProfileController::class);
     Route::post('/profiles/{profile}/claim', [ProfileController::class, 'claimProfile']);
 
+    Route::get('/items/by-type', [ItemController::class, 'groupByType']);
+    Route::get('/items/low-stock', [ItemController::class, 'lowStock']);
     Route::apiResource('items', ItemController::class);
 
+    Route::get('/movements/latest', [MovementController::class, 'latest']);
     Route::apiResource('movements', MovementController::class);
 
     Route::apiResource('/types', TypeController::class);
@@ -31,5 +34,4 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('/boxes', StorageBoxController::class);
     Route::get('/roles', [RoleController::class, 'index']);
-
 });

@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Item;
 use App\Models\Boat;
 use App\Models\Location;
+use App\Models\Type;
 
 class ItemController extends Controller
 {
@@ -169,6 +170,109 @@ class ItemController extends Controller
         return response()->json([
             'status' => 'success',
             'message' => 'Item eliminado correctamente.'
+        ]);
+    }
+
+    /**
+     * List items that are at risk of being empty based on quantity and minimum_recommended
+     */
+    public function lowStock(Request $request)
+    {
+        $boat = Auth::user();
+        
+        $query = Item::with(['type', 'location', 'storageBox'])
+            ->whereHas('location', function ($q) use ($boat) {
+                $q->where('boat_id', $boat->id);
+            })
+            ->whereNotNull('minimum_recommended')
+            ->whereRaw('quantity <= minimum_recommended');
+
+        // Optional location filter
+        if ($request->filled('location_id')) {
+            $query->where('location_id', $request->location_id);
+        }
+
+        // Optional type filter
+        if ($request->filled('type_id')) {
+            $query->where('type_id', $request->type_id);
+        }
+
+        $items = $query->get();
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $items->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'name' => $item->name,
+                    'quantity' => $item->quantity,
+                    'minimum_recommended' => $item->minimum_recommended,
+                    'location' => $item->location->name,
+                    'type' => $item->type->name,
+                    'storage_box' => $item->storageBox ? $item->storageBox->name : null,
+                    'risk_level' => $this->calculateRiskLevel($item->quantity, $item->minimum_recommended)
+                ];
+            })
+        ]);
+    }
+
+    /**
+     * Calculate risk level based on current quantity and minimum recommended
+     */
+    private function calculateRiskLevel($quantity, $minimumRecommended)
+    {
+        if ($quantity === 0) {
+            return 'critical';
+        }
+        
+        $ratio = $quantity / $minimumRecommended;
+        
+        if ($ratio <= 0.25) {
+            return 'high';
+        } elseif ($ratio <= 0.5) {
+            return 'medium';
+        } else {
+            return 'low';
+        }
+    }
+
+    /**
+     * Group items by type showing counts and total quantities
+     */
+    public function groupByType(Request $request)
+    {
+        $boat = Auth::user();
+
+        $types = Type::with(['items' => function ($query) use ($boat) {
+            $query->whereHas('location', function ($q) use ($boat) {
+                $q->where('boat_id', $boat->id);
+            });
+        }])
+        ->whereHas('items.location', function ($query) use ($boat) {
+            $query->where('boat_id', $boat->id);
+        })
+        ->get()
+        ->map(function ($type) {
+            return [
+                'type_id' => $type->id,
+                'type_name' => $type->name,
+                'total_items' => $type->items->count(), // Number of different items
+                'total_quantity' => $type->items->sum('quantity'), // Sum of all quantities
+                'items' => $type->items->map(function ($item) {
+                    return [
+                        'id' => $item->id,
+                        'name' => $item->name,
+                        'quantity' => $item->quantity,
+                        'location' => $item->location->name,
+                        'storage_box' => $item->storageBox ? $item->storageBox->name : null
+                    ];
+                })
+            ];
+        });
+
+        return response()->json([
+            'status' => 'success',
+            'data' => $types
         ]);
     }
 }

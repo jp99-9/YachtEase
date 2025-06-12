@@ -1,0 +1,21 @@
+# Ignora dependencias locales
+node_modules
+vendor
+
+# Ignora entorno y configuraciones locales
+
+.env.local
+.env.*.local
+
+# Ignora archivos temporales y del sistema
+*.log
+*.sqlite
+*.pid
+*.phpunit.result.cache
+.idea
+.vscode
+.DS_Store
+thumbs.db
+
+# Ignora symlink conflictivo de Laravel
+public/storage

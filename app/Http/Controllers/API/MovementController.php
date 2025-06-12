@@ -15,37 +15,37 @@ class MovementController extends Controller
      * Display a listing of the resource.
      */
     public function index(Request $request)
-{
-    $boat = Auth::user(); // Barco autenticado
+    {
+        $boat = Auth::user(); // Barco autenticado
 
-    $movements = Movement::whereHas('profile', function ($query) use ($boat) {
+        $movements = Movement::whereHas('profile', function ($query) use ($boat) {
             $query->where('boat_id', $boat->id);
         })
-        ->when($request->input('item_id'), function ($query, $itemId) {
-            return $query->where('item_id', $itemId);
-        })
-        ->when($request->input('profile_id'), function ($query, $profileId) {
-            return $query->where('profile_id', $profileId);
-        })
-        ->when($request->input('movement_date'), function ($query, $movementDate) {
-            return $query->whereDate('movement_date', $movementDate);
-        })
-        ->with([
-            'profile',
-            'item',
-            'fromLocation',
-            'toLocation',
-            'fromBox',
-            'toBox'
-        ])
-        ->orderBy('movement_date', 'desc') // Opcional: para que lo veas más organizado, el más reciente primero
-        ->paginate(15);
+            ->when($request->input('item_id'), function ($query, $itemId) {
+                return $query->where('item_id', $itemId);
+            })
+            ->when($request->input('profile_id'), function ($query, $profileId) {
+                return $query->where('profile_id', $profileId);
+            })
+            ->when($request->input('movement_date'), function ($query, $movementDate) {
+                return $query->whereDate('movement_date', $movementDate);
+            })
+            ->with([
+                'profile',
+                'item',
+                'fromLocation',
+                'toLocation',
+                'fromBox',
+                'toBox'
+            ])
+            ->orderBy('movement_date', 'desc') // Opcional: para que lo veas más organizado, el más reciente primero
+            ->paginate(15);
 
-    return response()->json([
-        'status' => 'success',
-        'data' => $movements
-    ]);
-}
+        return response()->json([
+            'status' => 'success',
+            'data' => $movements
+        ]);
+    }
 
 
     /**
@@ -110,12 +110,12 @@ class MovementController extends Controller
         $item->quantity -= $validated['quantity'];
 
         if ($item->quantity <= 0) {
-            $item->quantity = 0; 
-            $item->save();//  Si no queda stock, lo eliminamos
+            $item->quantity = 0;
+            $item->save(); //  Si no queda stock, lo eliminamos
         } else {
             $item->save(); // Si aún queda stock, solo lo guardamos
         }
-        
+
 
 
 
@@ -213,5 +213,53 @@ class MovementController extends Controller
             'status' => 'success',
             'message' => 'Movimiento eliminado correctamente.'
         ]);
+    }
+
+    public function latest(Request $request)
+    {
+        try {
+            $boat = Auth::user();
+            
+            if (!$boat) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Unauthorized'
+                ], 401);
+            }
+
+            $movements = Movement::whereHas('profile', function ($query) use ($boat) {
+                $query->where('boat_id', $boat->id);
+            })
+            ->with([
+                'profile',
+                'item',
+                'fromLocation',
+                'toLocation',
+                'fromBox',
+                'toBox'
+            ])
+            ->orderBy('movement_date', 'desc')  // Changed from created_at to movement_date to match index method
+            ->take(10)
+            ->get();
+
+            if ($movements->isEmpty()) {
+                return response()->json([
+                    'status' => 'success',
+                    'data' => []
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'data' => $movements
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'An error occurred while fetching movements',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
 }
